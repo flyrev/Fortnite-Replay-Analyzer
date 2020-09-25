@@ -1,26 +1,95 @@
-import React, { Component } from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
 
-export class Home extends Component {
-  static displayName = Home.name;
+export function Home() {
+    const [error, setError] = useState(null);
+    const [replayData, setReplayData] = useState({});
+    const [analysisUrl, setAnalysisUrl] = useState(null);
+    const [pending, setPending] = useState(false);
 
-  render () {
+    const onFileChange = event => {
+        const selectedFile = event.target.files[0];
+
+        setPending(true);
+        setError(null);
+
+        const formData = new FormData();
+
+        formData.append(
+            "replay",
+            selectedFile,
+            selectedFile.name
+        );
+
+        axios.post("replay", formData).then(response => {
+            const replayData = response.data;
+            console.log(replayData);
+            setReplayData(replayData.game);
+            setAnalysisUrl(replayData.analysisUrl);
+            setPending(false);
+        }).catch(err => {
+            console.error(err);
+            setError("There was an error uploading your replay: " + err);
+            setPending(false);
+        });
+    };
+
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+        <div>
+            <h1>Welcome, welcome!</h1>
+            <p>Curious about which platforms your opponents were on? Upload your replay and find out!</p>
+            {replayData.winningDisplayNames && replayData.winningDisplayNames.length > 0 &&
+                <div><h1>#1 Victory Royale:</h1>  <p>{replayData.winningDisplayNames.join(", ")}</p></div>
+            }
+            {replayData.platformStatistics &&
+                <div>
+                    <h2>Platform statistics for your game:</h2>
+                    <div>Windows: {replayData.platformStatistics["win"] || 0}</div>
+                    <div>PlayStation: {replayData.platformStatistics["psn"] || 0}</div>
+                    <div>Mac: {replayData.platformStatistics["mac"] || 0}</div>
+                    <div>XBox: {replayData.platformStatistics["xbl"] || 0}</div>
+                    <div>Nintendo Switch: {replayData.platformStatistics["swt"] || 0}</div>
+                    <div>iPhone or iPad: {replayData.platformStatistics["ios"] || 0}</div>
+                    <div>Android: {replayData.platformStatistics["and"] || 0}</div>
+                </div>
+            }
+            {replayData.botCount &&
+                <div><p>Bot count: <b>{replayData.botCount}</b></p></div>
+            }
+            {replayData.realPlayerCount &&
+                <div><p>Real player count: <b>{replayData.realPlayerCount}</b></p></div>
+            }
+            {replayData.playerCount &&
+                <div><p>Total player count: <b>{replayData.playerCount}</b></p></div>
+            }
+            {replayData.eliminations &&
+                <div>
+                    <h2>Eliminations</h2>
+                    {replayData.eliminations.map((elimination, index) => <div key={index}>{elimination.eliminatedBy.name} ({elimination.eliminatedBy.platform}) - {elimination.eliminated.name} ({elimination.eliminated.platform})</div>)}
+                </div>
+            }
+            {pending &&
+                <div><p>Uploading, please wait ...</p></div>
+            }
+            {analysisUrl && <div><h2>Share this analysis</h2><a href={analysisUrl}>Link to replay analysis (valid for 7 days)</a></div>}
+            {error && <div><p>{error}</p></div>}
+            {pending ||
+                <div>
+                    <h2>Upload replay to see statistics:</h2>
+                    <div>
+                        <div className="input-group">
+                            <div className="custom-file">
+                                <input type="file" className="custom-file-input" id="inputGroupFile01"
+                                    aria-describedby="inputGroupFileAddon01" onChange={onFileChange} accept=".replay" />
+                                <label className="custom-file-label" htmlFor="inputGroupFile01">Choose file</label>
+                            </div>
+                        </div>
+                    </div>
+                    <p></p>
+                </div>
+            }
+            <h2>Where can I find the replay files?</h2>
+            <p>To find the folder where your replays are stored, open Fortnite, go to the Career tab and then Replays. Click on "Open replay folder" to see where they are stored. On Windows this folder is usually <b>%localappdata%\FortniteGame\Saved\Demos</b> or <b>C:\Users\[your&nbsp;username]\Local\FortniteGame\Saved\Demos</b>.</p>
+        </div >
     );
-  }
 }

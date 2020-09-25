@@ -1,3 +1,5 @@
+using FortniteReplayAnalyzer.Controllers.ExternalApis;
+using FortniteReplayAnalyzer.ExternalApis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -5,8 +7,10 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 
-namespace app
+namespace FortniteReplayAnalyzer
 {
     public class Startup
     {
@@ -20,7 +24,6 @@ namespace app
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
@@ -28,6 +31,17 @@ namespace app
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            var fortniteIoApiKey = Configuration["FORTNITE_IO_API_KEY"];
+            var fortniteIoBaseUrl = "https://fortniteapi.io";
+            services.AddSingleton<FortniteIoApiClient>(provider => new FortniteIoApiClient(provider.GetRequiredService<ILogger<FortniteIoApiClient>>(), fortniteIoBaseUrl, fortniteIoApiKey));
+
+            var s3Key = Configuration["AWS_S3_ACCESS_KEY"];
+            var s3Secret = Configuration["AWS_S3_ACCESS_SECRET"];
+            var s3Bucket = Configuration["AWS_S3_BUCKET"];
+
+            Console.WriteLine($"Using bucket {s3Bucket}");
+            services.AddSingleton<ReplayAnalysisStorage>(provider => new ReplayAnalysisStorage(provider.GetRequiredService<ILogger<ReplayAnalysisStorage>>(), s3Key, s3Secret, s3Bucket));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
