@@ -1,0 +1,9 @@
+**/node_modules
+obj/
+.git/
+bin/
+keys.json
+aws/
+deploy
+build-docker-image
+provision
