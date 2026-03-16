@@ -1,12 +1,145 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # NuGet dependencies for the ASP.NET Core web application
+  - package-ecosystem: "nuget"
+    directory: "/app"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 1
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "nuget"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
+    groups:
+      aws-sdk:
+        patterns:
+          - "AWSSDK*"
+      microsoft:
+        patterns:
+          - "Microsoft.*"
+
+  # NuGet dependencies for the CLI tool
+  - package-ecosystem: "nuget"
+    directory: "/cli"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "nuget"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
+
+  # npm dependencies for the React frontend
+  - package-ecosystem: "npm"
+    directory: "/app/ClientApp"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
+    versioning-strategy: "increase"
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "react-scripts"
+          - "@types/react*"
+      react-router:
+        patterns:
+          - "react-router*"
+      eslint:
+        patterns:
+          - "eslint*"
+        update-types:
+          - "minor"
+          - "patch"
+      bootstrap:
+        patterns:
+          - "bootstrap"
+          - "reactstrap"
+
+  # Docker base image updates
+  - package-ecosystem: "docker"
+    directory: "/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
+
+  # GitHub Actions (ready for when workflows are added)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
