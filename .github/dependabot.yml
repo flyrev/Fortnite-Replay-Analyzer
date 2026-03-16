@@ -120,3 +120,25 @@ updates:
     pull-request-branch-name:
       separator: "/"
 
+  # GitHub Actions workflows (CodeQL etc.)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Oslo"
+    open-pull-requests-limit: 1
+    reviewers:
+      - "flyrev"
+    assignees:
+      - "flyrev"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    rebase-strategy: "auto"
+    pull-request-branch-name:
+      separator: "/"
