@@ -67,7 +67,7 @@ namespace FortniteReplayAnalyzer.Controllers
 
         private static bool IsBot(PlayerData playerData)
         {
-            return playerData.IsBot.GetValueOrDefault(false);
+            return playerData.IsBot;
         }
 
         private static bool IsRealPlayer(PlayerData playerData)

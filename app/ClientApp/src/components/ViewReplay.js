@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 export function ViewReplay() {
@@ -34,17 +34,16 @@ export function ViewReplay() {
         });
     };
 
-    const fetchData = async () => {
-        const result = await axios.get(`/replay/${params.guid}`);
-        console.log(result);
-        const replayData = result.data;
-        console.log(replayData);
-        setReplayData(replayData.game);
-    }
-
     useEffect(() => {
+        const fetchData = async () => {
+            const result = await axios.get(`/replay/${params.guid}`);
+            console.log(result);
+            const replayData = result.data;
+            console.log(replayData);
+            setReplayData(replayData.game);
+        };
         fetchData();
-    }, []);
+    }, [params.guid]);
 
     return (
         <div>
