@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0.0-preview.1 AS build-env
 RUN apt-get update -y
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt-get install nodejs -yq
@@ -14,7 +14,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.0-preview.1
 WORKDIR /app
 COPY --from=build-env /app/out .
 
