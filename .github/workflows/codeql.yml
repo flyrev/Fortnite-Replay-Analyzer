@@ -29,9 +29,6 @@ jobs:
     name: Analyze C#
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      NPM_CONFIG_AUDIT: "false"
-      NPM_CONFIG_FUND: "false"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -39,7 +36,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

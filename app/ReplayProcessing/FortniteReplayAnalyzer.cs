@@ -10,9 +10,13 @@ namespace FortniteReplayAnalyzer
     {
         public FortniteGame Analyze(FortniteReplay replay, Dictionary<string, string> displayNameFromEpicId)
         {
-            var realPlayers = replay.PlayerData.Where(player => player.EpicId != null && player.EpicId.Length > 0).Distinct();
+            var realPlayers = replay.PlayerData
+                .Where(player => !string.IsNullOrWhiteSpace(player.EpicId))
+                .GroupBy(player => player.EpicId)
+                .Select(group => group.First())
+                .ToList();
             var platformStatistics = realPlayers.GroupBy(player => player.Platform)
-                      .ToDictionary(x => x.Key, x => x.ToList().Count());
+                .ToDictionary(group => group.Key, group => group.Count());
 
             var eliminations = replay.Eliminations
                 .Where(elimination => !elimination.Knocked)
@@ -35,28 +39,14 @@ namespace FortniteReplayAnalyzer
                 })
                 .ToList();
 
-            var busRoute = replay.MapData.BattleBusFlightPaths.ToList();
-
             var playerCount = Convert.ToInt32(replay.TeamStats.TotalPlayers);
-            var realPlayerCount = realPlayers.ToList().Count();
+            var realPlayerCount = realPlayers.Count;
 
-            var displayNamesOfWinners = new List<string>();
-
-            try
-            {
-                var winners = replay.GameData.WinningPlayerIds.Select(playerId => replay.PlayerData
-            .Where(playerData => playerData.Id == playerId).FirstOrDefault()).ToList();
-
-                var epicIdsOfWinners = winners.Where(winner => winner != null && winner.EpicId != null)
-                    .Select(winner => winner.EpicId);
-
-                displayNamesOfWinners = epicIdsOfWinners.Where(epicIdOfWinner => epicIdOfWinner != null)
-                    .Select(epicIdOfWinner => displayNameFromEpicId.GetValueOrDefault(epicIdOfWinner, "Unknown player")).ToList();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            var displayNamesOfWinners = replay.GameData.WinningPlayerIds
+                .Select(playerId => replay.PlayerData.FirstOrDefault(playerData => playerData.Id == playerId)?.EpicId)
+                .Where(epicId => !string.IsNullOrWhiteSpace(epicId))
+                .Select(epicId => displayNameFromEpicId.GetValueOrDefault(epicId, "Unknown player"))
+                .ToList();
 
             var replayInfo = new FortniteGame
             {
@@ -64,14 +54,11 @@ namespace FortniteReplayAnalyzer
                 PlayerCount = playerCount,
                 RealPlayerCount = realPlayerCount,
                 PlatformStatistics = platformStatistics,
-                Eliminations = eliminations,//,
+                Eliminations = eliminations,
                 WinningPlayerIds = replay.GameData.WinningPlayerIds,
                 WinningDisplayNames = displayNamesOfWinners,
                 BotCount = playerCount - realPlayerCount,
-                BusRouteRaw = busRoute,
-                //ReplayRaw = replay
-                //MapDataRaw = replay.MapData,
-                //GameDataRaw = replay.GameData,
+                BusRouteRaw = replay.MapData.BattleBusFlightPaths.ToList()
             };
 
             return replayInfo;

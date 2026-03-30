@@ -2,7 +2,7 @@ using FortniteReplayAnalyzer.Controllers.ExternalApis;
 using FortniteReplayAnalyzer.ExternalApis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +40,6 @@ namespace FortniteReplayAnalyzer
             var s3Secret = Configuration["AWS_S3_ACCESS_SECRET"];
             var s3Bucket = Configuration["AWS_S3_BUCKET"];
 
-            Console.WriteLine($"Using bucket {s3Bucket}");
             services.AddSingleton<ReplayAnalysisStorage>(provider => new ReplayAnalysisStorage(provider.GetRequiredService<ILogger<ReplayAnalysisStorage>>(), s3Key, s3Secret, s3Bucket));
         }
 
@@ -53,13 +52,24 @@ namespace FortniteReplayAnalyzer
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        await context.Response.WriteAsJsonAsync(new { error = "An unexpected error occurred." });
+                    });
+                });
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            var httpsPort = Configuration["ASPNETCORE_HTTPS_PORT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORT");
+            if (env.IsDevelopment() || !string.IsNullOrWhiteSpace(httpsPort))
+            {
+                app.UseHttpsRedirection();
+            }
+
             app.UseSpaStaticFiles();
 
             app.UseRouting();

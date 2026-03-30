@@ -11,9 +11,9 @@ namespace cli
 {
     class Program
     {
-        static ReplayReader reader = new ReplayReader();
+        static readonly ReplayReader Reader = new ReplayReader();
 
-        public static List<string> replayFiles = new List<string>();
+        static readonly List<string> ReplayFiles = new List<string>();
 
         static void Main(string[] args)
         {
@@ -56,23 +56,26 @@ namespace cli
 
         static void PrintReplayInformationFromReplayFile(string path) {
             try {
-                var read = reader.ReadReplay(path);
+                var read = Reader.ReadReplay(path);
                 PrintReplayInformationFromReplay(read);
-                replayFiles.Clear();
+                ReplayFiles.Clear();
                 Console.WriteLine("Waiting for next game");
             } catch (IOException) {
                 Log("Could not open replay");
             } catch (InvalidReplayException) {
-                if (!replayFiles.Contains(path)) {
+                if (!ReplayFiles.Contains(path)) {
                     Log($"In progress: {path}");
-                    replayFiles.Add(path);
+                    ReplayFiles.Add(path);
                 }
             }
         }
        static void PrintReplayInformationFromReplay(FortniteReplay replay) {
             var totalPlayerCount = Convert.ToInt32(replay.TeamStats.TotalPlayers);
 
-            var realPlayers = replay.PlayerData.Where(player => player.EpicId != null && player.EpicId.Length > 0).Distinct();
+            var realPlayers = replay.PlayerData
+                .Where(player => !string.IsNullOrWhiteSpace(player.EpicId))
+                .GroupBy(player => player.EpicId)
+                .Select(group => group.First());
             var realPlayerCount = realPlayers.Count();
             var botCount = totalPlayerCount-realPlayerCount;
 
@@ -94,6 +97,11 @@ namespace cli
 
         private static void PrintException(Exception ex)
         {
+            if (ex == null)
+            {
+                return;
+            }
+
             Console.WriteLine($"Message: {ex.Message}");
             Console.WriteLine("Stacktrace:");
             Console.WriteLine(ex.StackTrace);

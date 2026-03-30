@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { act } from 'react';
+import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
@@ -8,11 +8,19 @@ jest.mock('axios', () => ({
   post: jest.fn()
 }));
 
-it('renders without crashing', () => {
+it('renders without crashing', async () => {
   const div = document.createElement('div');
-  ReactDOM.render(
-    <MemoryRouter>
-      <App />
-    </MemoryRouter>, div);
-  ReactDOM.unmountComponentAtNode(div);
+  const root = createRoot(div);
+
+  await act(async () => {
+    root.render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+  });
+
+  await act(async () => {
+    root.unmount();
+  });
 });

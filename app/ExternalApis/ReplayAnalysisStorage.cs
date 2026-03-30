@@ -25,7 +25,7 @@ namespace FortniteReplayAnalyzer.ExternalApis
             logger.LogInformation($"Using bucket {bucket}");
         }
 
-        public async Task<S3Response> UploadJson(string guid, string json)
+        public async Task UploadJson(string guid, string json)
         {
             logger.LogInformation("Uploading json information from replay");
             var client = new AmazonS3Client(key, secret, Amazon.RegionEndpoint.EUNorth1);
@@ -47,21 +47,9 @@ namespace FortniteReplayAnalyzer.ExternalApis
 
             logger.LogInformation($"Json upload finished. Key: {guid}");
 
-            if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                return new S3Response
-                {
-                    Success = true,
-                    Guid = Guid.Parse(guid).ToString()
-                };
-            }
-            else
-            {
-                return new S3Response
-                {
-                    Success = false,
-                    Guid = Guid.Parse(guid).ToString()
-                };
+                logger.LogWarning("Json upload finished with status {StatusCode}. Key: {Guid}", response.HttpStatusCode, guid);
             }
         }
         
