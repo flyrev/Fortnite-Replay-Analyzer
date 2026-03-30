@@ -4,8 +4,10 @@ on:
   workflow_run:
     workflows: ["CI", "CodeQL"]
     types: [completed]
+    branches:
+      - "dependabot/**"
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 9 * * 1-5"
   workflow_dispatch:
 
 concurrency:

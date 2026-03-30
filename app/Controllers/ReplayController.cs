@@ -41,7 +41,6 @@ namespace FortniteReplayAnalyzer.Controllers
             {
                 Successful = true,
                 AnalysisUrl = $"/view/{guid}",
-                RawData = $"/replay/{guid}",
                 Game = replayInfo
             };
 
@@ -50,15 +49,20 @@ namespace FortniteReplayAnalyzer.Controllers
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
             var json = JsonConvert.SerializeObject(gameAnalysis, serializerSettings);
-            _ = replayStorage.UploadJson(guid, json);
+            await replayStorage.UploadJson(guid, json);
 
-            return Ok(json);
+            return Content(json, "application/json");
         }
 
         private async Task<FortniteGame> RetrievePlayerNamesAndParse(FortniteReplay parsedReplay)
         {
 
-            var players = parsedReplay.PlayerData.Where(playerData => IsRealPlayer(playerData)).Select(playerData => playerData.EpicId).ToList();
+            var players = parsedReplay.PlayerData
+                .Where(IsRealPlayer)
+                .Select(playerData => playerData.EpicId)
+                .Where(epicId => !string.IsNullOrWhiteSpace(epicId))
+                .Distinct()
+                .ToList();
             var playerNamesFromApi = await apiClient.GetDisplayNamesFromEpicIds(players);
             logger.LogInformation($"Retrieved player {playerNamesFromApi.Count()} names.");
             var replayInfo = new FortniteReplayAnalyzer().Analyze(parsedReplay, playerNamesFromApi);
@@ -67,7 +71,7 @@ namespace FortniteReplayAnalyzer.Controllers
 
         private static bool IsBot(PlayerData playerData)
         {
-            return playerData.IsBot.GetValueOrDefault(false);
+            return playerData.IsBot;
         }
 
         private static bool IsRealPlayer(PlayerData playerData)
@@ -80,7 +84,7 @@ namespace FortniteReplayAnalyzer.Controllers
         public async Task<IActionResult> GetAsync(string gameId)
         {
             var json = await replayStorage.ReadJsonDataAsync(gameId);
-            return Ok(json);
+            return Content(json, "application/json");
         }
 
     }
