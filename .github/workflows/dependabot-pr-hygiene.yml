@@ -1,0 +1,103 @@
+name: Dependabot PR hygiene
+
+on:
+  schedule:
+    - cron: "30 7 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: dependabot-pr-hygiene
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  close-superseded:
+    name: Close superseded Dependabot PRs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Close older PRs in crowded dependency groups
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const keepCount = 2;
+            const staleAfterDays = 7;
+            const now = Date.now();
+            const botLogins = new Set(['app/dependabot', 'dependabot[bot]']);
+
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const dependabotPrs = prs.filter((pr) => botLogins.has(pr.user?.login || ''));
+            const groups = new Map();
+
+            for (const pr of dependabotPrs) {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner,
+                repo,
+                pull_number: pr.number,
+                per_page: 100,
+              });
+
+              const fileNames = files.map((file) => file.filename).sort();
+              const fallbackKey = pr.head.ref.split('/').slice(0, -1).join('/');
+              const key = fileNames.join('|') || fallbackKey;
+              const group = groups.get(key) || [];
+
+              group.push({
+                pr,
+                fileNames,
+              });
+
+              groups.set(key, group);
+            }
+
+            let closedCount = 0;
+
+            for (const group of groups.values()) {
+              group.sort((left, right) => new Date(right.pr.created_at) - new Date(left.pr.created_at));
+
+              for (const entry of group.slice(keepCount)) {
+                const ageDays = (now - new Date(entry.pr.created_at).getTime()) / 86400000;
+
+                if (ageDays < staleAfterDays) {
+                  continue;
+                }
+
+                const fileSummary = entry.fileNames.map((file) => `\`${file}\``).join(', ');
+
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: entry.pr.number,
+                  body: [
+                    '<!-- dependabot-pr-hygiene -->',
+                    'Closing this older Dependabot PR because newer PRs are already open for the same dependency manifest set.',
+                    '',
+                    `Affected files: ${fileSummary || 'same dependency group'}`,
+                    `Policy: keep the newest ${keepCount} PRs per dependency group and let older superseded bot PRs age out after ${staleAfterDays} days.`,
+                  ].join('\n'),
+                });
+
+                await github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: entry.pr.number,
+                  state: 'closed',
+                });
+
+                closedCount += 1;
+              }
+            }
+
+            core.info(`Reviewed ${dependabotPrs.length} Dependabot PR(s) across ${groups.size} group(s); closed ${closedCount}.`);

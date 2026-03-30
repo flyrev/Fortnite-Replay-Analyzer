@@ -1,0 +1,178 @@
+name: Dependabot major upgrade assist
+
+on:
+  workflow_run:
+    workflows: ["CI", "CodeQL"]
+    types: [completed]
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: dependabot-major-upgrade-assist-${{ github.event_name }}-${{ github.event.workflow_run.id || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  request-help:
+    name: Request upgrade guidance for failed major bumps
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Ask Copilot for targeted major-upgrade guidance
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const botLogins = new Set(['app/dependabot', 'dependabot[bot]']);
+            const relevantFailureConclusions = new Set(['action_required', 'failure', 'startup_failure', 'timed_out']);
+
+            function isRelevantCheck(name) {
+              return /^Verify app and CLI$/.test(name) ||
+                /^Build Docker image$/.test(name) ||
+                /^Analyze /.test(name) ||
+                /^CI$/.test(name) ||
+                /^CodeQL$/.test(name);
+            }
+
+            function getMajorUpgrade(text) {
+              const match = text.match(/from\s+v?(\d+)(?:\.\d+){0,3}\s+to\s+v?(\d+)(?:\.\d+){0,3}/i);
+              if (!match) {
+                return null;
+              }
+
+              const fromMajor = Number(match[1]);
+              const toMajor = Number(match[2]);
+
+              if (!Number.isFinite(fromMajor) || !Number.isFinite(toMajor) || toMajor <= fromMajor) {
+                return null;
+              }
+
+              return { fromMajor, toMajor };
+            }
+
+            async function listCandidatePrs() {
+              if (context.eventName === 'workflow_run') {
+                const run = context.payload.workflow_run;
+                let prs = run.pull_requests || [];
+
+                if (!prs.length && run.head_branch) {
+                  const response = await github.rest.pulls.list({
+                    owner,
+                    repo,
+                    state: 'open',
+                    head: `${owner}:${run.head_branch}`,
+                    per_page: 20,
+                  });
+                  prs = response.data.map((pr) => ({ number: pr.number }));
+                }
+
+                return prs.map((pr) => pr.number);
+              }
+
+              const prs = await github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: 'open',
+                per_page: 100,
+              });
+
+              return prs.map((pr) => pr.number);
+            }
+
+            const candidateNumbers = [...new Set(await listCandidatePrs())];
+            let commentedCount = 0;
+
+            for (const pullNumber of candidateNumbers) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: pullNumber,
+              });
+
+              if (!botLogins.has(pr.user?.login || '')) {
+                continue;
+              }
+
+              const upgrade = getMajorUpgrade(`${pr.title}\n${pr.body || ''}`);
+              if (!upgrade) {
+                continue;
+              }
+
+              const checksResponse = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: pr.head.sha,
+                per_page: 100,
+              });
+
+              const failedChecks = checksResponse.data.check_runs.filter((check) => {
+                return check.status === 'completed' &&
+                  relevantFailureConclusions.has(check.conclusion) &&
+                  isRelevantCheck(check.name);
+              });
+
+              if (!failedChecks.length) {
+                continue;
+              }
+
+              const marker = `<!-- dependabot-major-upgrade-assist:${pr.head.sha} -->`;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: pullNumber,
+                per_page: 100,
+              });
+
+              if (comments.some((comment) => (comment.body || '').includes(marker))) {
+                continue;
+              }
+
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner,
+                repo,
+                pull_number: pullNumber,
+                per_page: 100,
+              });
+
+              const dependencyMatch = pr.title.match(/Bump\s+(.+?)\s+from\s+/i);
+              const dependencyName = dependencyMatch ? dependencyMatch[1] : 'this dependency';
+              const failedCheckLines = failedChecks.map((check) => `- ${check.name}: ${check.html_url}`);
+              const changedFiles = files.map((file) => `\`${file.filename}\``).join(', ');
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pullNumber,
+                body: [
+                  marker,
+                  '@copilot this Dependabot PR is a major upgrade and the automated checks are failing.',
+                  '',
+                  'Please review the failure and suggest the smallest code or configuration changes needed to make this upgrade pass without changing unrelated behavior.',
+                  '',
+                  `Context:`,
+                  `- PR: #${pullNumber} (${pr.title})`,
+                  `- Dependency: ${dependencyName}`,
+                  `- Version jump: ${upgrade.fromMajor} -> ${upgrade.toMajor}`,
+                  `- Changed files: ${changedFiles || 'n/a'}`,
+                  '- Failed checks:',
+                  ...failedCheckLines,
+                  '',
+                  'Please comment with:',
+                  '1. likely breaking changes behind the failure',
+                  '2. the minimal edits needed to restore the build',
+                  '3. whether the upgrade should be deferred instead',
+                ].join('\n'),
+              });
+
+              commentedCount += 1;
+            }
+
+            core.info(`Reviewed ${candidateNumbers.length} candidate PR(s); requested guidance on ${commentedCount}.`);
