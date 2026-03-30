@@ -23,7 +23,6 @@ export function Home() {
 
         axios.post("replay", formData).then(response => {
             const replayData = response.data;
-            console.log(replayData);
             setReplayData(replayData.game);
             setAnalysisUrl(replayData.analysisUrl);
             setPending(false);

@@ -13,19 +13,13 @@
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^5.0.1",
-    "reactstrap": "^9.2.3",
-    "rimraf": "^2.6.2"
+    "reactstrap": "^9.2.3"
   },
   "devDependencies": {
-    "ajv": "^8.18.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "cross-env": "^5.2.0",
-    "typescript": "^5.9.3",
-    "eslint": "^6.8.0",
-    "eslint-config-react-app": "^5.2.0",
-    "eslint-plugin-flowtype": "^8.0.3",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.5"
+    "eslint": "^8.57.0",
+    "eslint-config-react-app": "^7.0.1"
   },
   "eslintConfig": {
     "extends": "react-app"
