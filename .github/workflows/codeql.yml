@@ -3,47 +3,77 @@ name: CodeQL
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "LICENSE"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "LICENSE"
   schedule:
-    - cron: "0 6 * * 1" # Monday 06:00 UTC, aligned with dependabot schedule
+    - cron: "0 6 * * 1" # Monday 06:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
 
 jobs:
-  analyze:
-    name: Analyze
+  analyze-csharp:
+    name: Analyze C#
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [csharp, javascript-typescript]
+    timeout-minutes: 30
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: ${{ matrix.language }}
-
-      - name: Setup .NET
-        if: matrix.language == 'csharp'
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
+          languages: csharp
+          build-mode: manual
 
       - name: Build C# projects
-        if: matrix.language == 'csharp'
         run: |
           dotnet restore app/FortniteReplayAnalyzer.csproj
-          dotnet build app/FortniteReplayAnalyzer.csproj --no-restore
+          dotnet build app/FortniteReplayAnalyzer.csproj --configuration Release --no-restore
           dotnet restore cli/cli.csproj
-          dotnet build cli/cli.csproj --no-restore
+          dotnet build cli/cli.csproj --configuration Release --no-restore
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:${{ matrix.language }}"
+          category: /language:csharp
+
+  analyze-javascript:
+    name: Analyze JavaScript/TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:javascript-typescript
