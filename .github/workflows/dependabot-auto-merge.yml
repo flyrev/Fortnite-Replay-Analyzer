@@ -1,5 +1,15 @@
 name: Dependabot auto-merge
-on: pull_request
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+    paths:
+      - "app/ClientApp/package.json"
+      - "app/ClientApp/package-lock.json"
+      - "app/FortniteReplayAnalyzer.csproj"
+      - "cli/cli.csproj"
+      - "app/Dockerfile"
 
 permissions:
   contents: write
@@ -8,7 +18,7 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]' && contains(join(github.event.pull_request.labels.*.name, ','), 'dependencies')
     steps:
       - name: Auto-merge Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"

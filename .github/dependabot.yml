@@ -4,15 +4,10 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/app"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "monthly"
       time: "06:00"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 1
-    reviewers:
-      - "flyrev"
-    assignees:
-      - "flyrev"
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -23,26 +18,21 @@ updates:
     pull-request-branch-name:
       separator: "/"
     groups:
-      aws-sdk:
+      routine:
         patterns:
-          - "AWSSDK*"
-      microsoft:
-        patterns:
-          - "Microsoft.*"
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # NuGet dependencies for the CLI tool
   - package-ecosystem: "nuget"
     directory: "/cli"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
+      interval: "monthly"
+      time: "06:15"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 1
-    reviewers:
-      - "flyrev"
-    assignees:
-      - "flyrev"
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -52,20 +42,22 @@ updates:
     rebase-strategy: "auto"
     pull-request-branch-name:
       separator: "/"
+    groups:
+      routine:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # npm dependencies for the React frontend
   - package-ecosystem: "npm"
     directory: "/app/ClientApp"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
+      interval: "monthly"
+      time: "06:30"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 1
-    reviewers:
-      - "flyrev"
-    assignees:
-      - "flyrev"
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
@@ -76,40 +68,23 @@ updates:
     rebase-strategy: "auto"
     pull-request-branch-name:
       separator: "/"
-    versioning-strategy: "increase"
+    versioning-strategy: "increase-if-necessary"
     groups:
-      react:
+      routine:
         patterns:
-          - "react"
-          - "react-dom"
-          - "react-scripts"
-      react-router:
-        patterns:
-          - "react-router*"
-      eslint:
-        patterns:
-          - "eslint*"
+          - "*"
         update-types:
           - "minor"
           - "patch"
-      bootstrap:
-        patterns:
-          - "bootstrap"
-          - "reactstrap"
 
   # Docker base image updates
   - package-ecosystem: "docker"
     directory: "/app"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
+      interval: "monthly"
+      time: "06:45"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 1
-    reviewers:
-      - "flyrev"
-    assignees:
-      - "flyrev"
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -119,20 +94,22 @@ updates:
     rebase-strategy: "auto"
     pull-request-branch-name:
       separator: "/"
+    groups:
+      routine:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # GitHub Actions workflows (CodeQL etc.)
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
+      interval: "monthly"
+      time: "07:00"
       timezone: "Europe/Oslo"
-    open-pull-requests-limit: 1
-    reviewers:
-      - "flyrev"
-    assignees:
-      - "flyrev"
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -142,3 +119,10 @@ updates:
     rebase-strategy: "auto"
     pull-request-branch-name:
       separator: "/"
+    groups:
+      routine:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
