@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
-it('renders without crashing', async () => {
+jest.mock('axios', () => ({
+  get: jest.fn(),
+  post: jest.fn()
+}));
+
+it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(
     <MemoryRouter>
       <App />
     </MemoryRouter>, div);
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  ReactDOM.unmountComponentAtNode(div);
 });

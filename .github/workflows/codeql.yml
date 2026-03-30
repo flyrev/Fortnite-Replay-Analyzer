@@ -33,9 +33,7 @@ jobs:
         if: matrix.language == 'csharp'
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            3.1.x
-            7.0.x
+          dotnet-version: 8.0.x
 
       - name: Build C# projects
         if: matrix.language == 'csharp'

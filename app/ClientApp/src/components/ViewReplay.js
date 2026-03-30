@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 export function ViewReplay() {
-    let params = useParams();
+    const { guid } = useParams();
 
     const [error, setError] = useState(null);
     const [replayData, setReplayData] = useState({});
@@ -34,17 +34,19 @@ export function ViewReplay() {
         });
     };
 
-    const fetchData = async () => {
-        const result = await axios.get(`/replay/${params.guid}`);
-        console.log(result);
-        const replayData = result.data;
-        console.log(replayData);
-        setReplayData(replayData.game);
-    }
-
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await axios.get(`/replay/${guid}`);
+                setReplayData(result.data.game);
+            } catch (err) {
+                console.error(err);
+                setError("There was an error loading your replay: " + err);
+            }
+        };
+
         fetchData();
-    }, []);
+    }, [guid]);
 
     return (
         <div>
@@ -77,7 +79,7 @@ export function ViewReplay() {
             {replayData.eliminations &&
                 <div>
                     <h2>Eliminations</h2>
-                    {replayData.eliminations.map(elimination => <div>{elimination.eliminatedBy.name} ({elimination.eliminatedBy.platform}) - {elimination.eliminated.name} ({elimination.eliminated.platform})</div>)}
+                    {replayData.eliminations.map((elimination, index) => <div key={index}>{elimination.eliminatedBy.name} ({elimination.eliminatedBy.platform}) - {elimination.eliminated.name} ({elimination.eliminated.platform})</div>)}
                 </div>
             }
             {pending &&
