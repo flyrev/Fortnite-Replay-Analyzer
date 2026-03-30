@@ -37,9 +37,7 @@ export function ViewReplay() {
     useEffect(() => {
         const fetchData = async () => {
             const result = await axios.get(`/replay/${params.guid}`);
-            console.log(result);
             const replayData = result.data;
-            console.log(replayData);
             setReplayData(replayData.game);
         };
         fetchData();
