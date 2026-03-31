@@ -31,8 +31,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          submodules: true
+
+      - name: Initialize replay corpora
+        run: git submodule update --init
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
