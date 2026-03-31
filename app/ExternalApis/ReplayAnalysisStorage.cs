@@ -15,6 +15,11 @@ namespace FortniteReplayAnalyzer.ExternalApis
         private readonly string secret;
         private readonly string bucket;
 
+        private static string SanitizeForLog(string value)
+        {
+            return value?.Replace("\r", string.Empty).Replace("\n", string.Empty) ?? string.Empty;
+        }
+
         public ReplayAnalysisStorage(ILogger<ReplayAnalysisStorage> logger, string key, string secret, string bucket)
         {
             this.logger = logger;
@@ -27,6 +32,7 @@ namespace FortniteReplayAnalyzer.ExternalApis
 
         public async Task UploadJson(string guid, string json)
         {
+            var sanitizedGuid = SanitizeForLog(guid);
             logger.LogInformation("Uploading json information from replay");
             var client = new AmazonS3Client(key, secret, Amazon.RegionEndpoint.EUNorth1);
 
@@ -45,16 +51,17 @@ namespace FortniteReplayAnalyzer.ExternalApis
                 response = await client.PutObjectAsync(request);
             };
 
-            logger.LogInformation($"Json upload finished. Key: {guid}");
+            logger.LogInformation("Json upload finished. Key: {Guid}", sanitizedGuid);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
             {
-                logger.LogWarning("Json upload finished with status {StatusCode}. Key: {Guid}", response.HttpStatusCode, guid);
+                logger.LogWarning("Json upload finished with status {StatusCode}. Key: {Guid}", response.HttpStatusCode, sanitizedGuid);
             }
         }
         
         public async Task<string> ReadJsonDataAsync(string guid)
         {
+            var sanitizedGuid = SanitizeForLog(guid);
             var client = new AmazonS3Client(key, secret, Amazon.RegionEndpoint.EUNorth1);
             try
             {
@@ -64,7 +71,7 @@ namespace FortniteReplayAnalyzer.ExternalApis
                     Key = guid
                 };
 
-                logger.LogInformation($"Downloading json. Key: {guid}");
+                logger.LogInformation("Downloading json. Key: {Guid}", sanitizedGuid);
                 using (GetObjectResponse response = await client.GetObjectAsync(request))
                 using (Stream responseStream = response.ResponseStream)
                 using (StreamReader responseStreamReader = new StreamReader(response.ResponseStream))

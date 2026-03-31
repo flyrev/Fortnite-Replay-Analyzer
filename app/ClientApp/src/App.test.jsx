@@ -1,11 +1,14 @@
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
+import { it, vi } from 'vitest';
 import App from './App';
 
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  post: jest.fn()
+vi.mock('axios', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn()
+  }
 }));
 
 it('renders without crashing', async () => {

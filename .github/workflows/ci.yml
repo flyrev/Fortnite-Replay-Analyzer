@@ -46,11 +46,11 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: app/ClientApp
-        run: npm ci
+        run: npm ci --include=dev
 
       - name: Test frontend
         working-directory: app/ClientApp
-        run: npm test -- --watch=false
+        run: npm test
 
       - name: Restore web app
         run: dotnet restore app/FortniteReplayAnalyzer.csproj

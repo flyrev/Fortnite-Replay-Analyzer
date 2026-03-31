@@ -7,28 +7,18 @@
     "bootstrap": "^5.3.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.2",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "cross-env": "^10.1.0"
+    "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^27.0.1",
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
-      "^react-router$": "<rootDir>/node_modules/react-router/dist/development/index.js",
-      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!(axios|react-router|react-router-dom)/)"
-    ]
+    "start": "node ./scripts/start.mjs",
+    "build": "vite build",
+    "test": "vitest run"
   },
   "browserslist": {
     "production": [

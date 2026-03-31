@@ -1,4 +1,4 @@
-const { TextEncoder, TextDecoder } = require('util');
+import { TextDecoder, TextEncoder } from 'node:util';
 
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
