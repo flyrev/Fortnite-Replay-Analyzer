@@ -1,0 +1,28 @@
+{
+  "expect": {
+    "guid": "F9F451AB3944ACA651ECE38F8E41D99E",
+    "playerCount": 0,
+    "realPlayerCount": 0,
+    "botCount": 0,
+    "eliminationCount": 94,
+    "busRouteCount": 0,
+    "containsEliminations": [
+      {
+        "eliminatedBy": {
+          "epicId": "30371716CACE4F2C9511F56CA140E2BC"
+        },
+        "eliminated": {
+          "epicId": "FCD887840C9F474EB63DFEB35881F6E4"
+        }
+      },
+      {
+        "eliminatedBy": {
+          "epicId": "E30F3A03887B4CB5A34FC1936FFE28F8"
+        },
+        "eliminated": {
+          "epicId": "1E14BD9D67CE4BAF95503E229DB79D12"
+        }
+      }
+    ]
+  }
+}

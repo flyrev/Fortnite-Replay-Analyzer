@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoWarn>$(NoWarn);CS8601;CS8618;CS8620</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FortniteReplayReader" Version="2.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\app\Data\FortniteElimination.cs" Link="Source\Data\FortniteElimination.cs" />
+    <Compile Include="..\..\app\Data\FortniteGame.cs" Link="Source\Data\FortniteGame.cs" />
+    <Compile Include="..\..\app\Data\FortniteGameAnalysis.cs" Link="Source\Data\FortniteGameAnalysis.cs" />
+    <Compile Include="..\..\app\Data\FortnitePlayer.cs" Link="Source\Data\FortnitePlayer.cs" />
+    <Compile Include="..\..\app\ReplayProcessing\FortniteReplayAnalyzer.cs" Link="Source\ReplayProcessing\FortniteReplayAnalyzer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ReplayFixtures\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

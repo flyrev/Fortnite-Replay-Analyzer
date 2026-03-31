@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -54,6 +56,12 @@ jobs:
 
       - name: Restore web app
         run: dotnet restore app/FortniteReplayAnalyzer.csproj
+
+      - name: Restore replay regression tests
+        run: dotnet restore tests/FortniteReplayAnalyzer.ReplayRegressionTests/FortniteReplayAnalyzer.ReplayRegressionTests.csproj
+
+      - name: Test replay regression harness
+        run: dotnet test tests/FortniteReplayAnalyzer.ReplayRegressionTests/FortniteReplayAnalyzer.ReplayRegressionTests.csproj --configuration Release --no-restore
 
       - name: Publish web app
         run: dotnet publish app/FortniteReplayAnalyzer.csproj --configuration Release --no-restore

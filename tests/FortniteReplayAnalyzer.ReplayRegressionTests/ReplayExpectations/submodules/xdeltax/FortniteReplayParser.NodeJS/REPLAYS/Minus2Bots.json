@@ -1,0 +1,18 @@
+{
+  "expect": {
+    "guid": "CC8240AED07DBA49B353BBEAAB4F6B1E",
+    "playerCount": 95,
+    "realPlayerCount": 96,
+    "platformStatistics": {
+      "PS5": 20,
+      "WIN": 25,
+      "XSX": 2,
+      "PSN": 33,
+      "XBL": 6,
+      "SWT": 9,
+      "AND": 1
+    },
+    "eliminationCount": 0,
+    "busRouteCount": 0
+  }
+}

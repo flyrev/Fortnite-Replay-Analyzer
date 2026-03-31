@@ -1,0 +1,10 @@
+{
+  "expect": {
+    "guid": "95D095EA094831218BEBBD9C3ED9F094",
+    "playerCount": 0,
+    "realPlayerCount": 0,
+    "botCount": 0,
+    "eliminationCount": 0,
+    "busRouteCount": 0
+  }
+}

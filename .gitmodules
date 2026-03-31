@@ -1,0 +1,36 @@
+[submodule "tests/submodules/ThisNils/node-replay-reader"]
+	path = tests/submodules/ThisNils/node-replay-reader
+	url = https://github.com/ThisNils/node-replay-reader.git
+[submodule "tests/submodules/tpatel/fortnite-replay-reader"]
+	path = tests/submodules/tpatel/fortnite-replay-reader
+	url = https://github.com/tpatel/fortnite-replay-reader.git
+[submodule "tests/submodules/Shiqan/fortnite-replay-reader"]
+	path = tests/submodules/Shiqan/fortnite-replay-reader
+	url = https://github.com/Shiqan/fortnite-replay-reader.git
+[submodule "tests/submodules/legitatx/fortnite-replay-parser"]
+	path = tests/submodules/legitatx/fortnite-replay-parser
+	url = https://github.com/legitatx/fortnite-replay-parser.git
+[submodule "tests/submodules/xdeltax/FortniteReplayParser.NodeJS"]
+	path = tests/submodules/xdeltax/FortniteReplayParser.NodeJS
+	url = https://github.com/xdeltax/FortniteReplayParser.NodeJS.git
+[submodule "tests/submodules/Beat-YT/FortniteReplay"]
+	path = tests/submodules/Beat-YT/FortniteReplay
+	url = https://github.com/Beat-YT/FortniteReplay.git
+[submodule "tests/submodules/xNocken/replay-reader"]
+	path = tests/submodules/xNocken/replay-reader
+	url = https://github.com/xNocken/replay-reader.git
+[submodule "tests/submodules/xNocken/replay-downloader"]
+	path = tests/submodules/xNocken/replay-downloader
+	url = https://github.com/xNocken/replay-downloader.git
+[submodule "tests/submodules/remoblaser/fn-replay-parser"]
+	path = tests/submodules/remoblaser/fn-replay-parser
+	url = https://github.com/remoblaser/fn-replay-parser.git
+[submodule "tests/submodules/Shiqan/FortniteReplayDecompressor"]
+	path = tests/submodules/Shiqan/FortniteReplayDecompressor
+	url = https://github.com/Shiqan/FortniteReplayDecompressor.git
+[submodule "tests/submodules/Kuinox/ChartsNite"]
+	path = tests/submodules/Kuinox/ChartsNite
+	url = https://github.com/Kuinox/ChartsNite.git
+[submodule "tests/submodules/haakonfp/fortnite-replay-collection"]
+	path = tests/submodules/haakonfp/fortnite-replay-collection
+	url = https://github.com/haakonfp/fortnite-replay-collection.git

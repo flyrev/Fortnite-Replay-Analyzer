@@ -1,0 +1,42 @@
+{
+  "expect": {
+    "guid": "3EEA130A21B20D4C8ED0C71DA831CF7E",
+    "playerCount": 100,
+    "realPlayerCount": 35,
+    "botCount": 65,
+    "platformStatistics": {
+      "XBL": 10,
+      "PSN": 14,
+      "SWT": 5,
+      "WIN": 4,
+      "IOS": 2
+    },
+    "winningPlayerIds": [
+      256
+    ],
+    "eliminationCount": 97,
+    "busRouteCount": 0,
+    "containsEliminations": [
+      {
+        "eliminatedBy": {
+          "epicId": "2EE8D354047548AF8A23E7531789F523",
+          "platform": "PSN"
+        },
+        "eliminated": {
+          "epicId": "F9F8AE89816E49969B3F306C8A20868B",
+          "platform": "XBL"
+        }
+      },
+      {
+        "eliminatedBy": {
+          "epicId": "03D767EFD4544FBAA2CFFC5E033853F1",
+          "platform": "WIN"
+        },
+        "eliminated": {
+          "epicId": "253EBBDF2FAF44B18021CD1B6B6A3B04",
+          "platform": "SWT"
+        }
+      }
+    ]
+  }
+}
