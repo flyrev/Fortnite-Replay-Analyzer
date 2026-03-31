@@ -8,7 +8,7 @@ The harness discovers replay files from two built-in sources:
 Initialize the bundled corpora first:
 
 ```bash
-git submodule update --init --recursive
+git submodule update --init
 ```
 
 You can still add your own fixtures to `tests/FortniteReplayAnalyzer.ReplayRegressionTests/ReplayFixtures`.
