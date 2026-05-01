@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="4.0.20.1" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.22.1" />
     <PackageReference Include="FortniteReplayReader" Version="2.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
