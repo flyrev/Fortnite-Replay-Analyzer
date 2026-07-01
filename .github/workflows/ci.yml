@@ -30,7 +30,7 @@ jobs:
       NPM_CONFIG_FUND: "false"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -71,7 +71,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build Docker image
         run: docker build --file app/Dockerfile --tag fortnite-replay-analyzer-ci app
