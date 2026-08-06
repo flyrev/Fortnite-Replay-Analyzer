@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Close older PRs in crowded dependency groups
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const owner = context.repo.owner;
