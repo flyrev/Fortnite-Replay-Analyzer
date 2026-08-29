@@ -1,14 +1,12 @@
 {
   "name": "Fortnite Replay Analyzer",
   "user": "ubuntu",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "install": "cd app/ClientApp && npm ci && cd ../.. && dotnet restore app/FortniteReplayAnalyzer.csproj && dotnet restore cli/cli.csproj",
+  "install": "bash .cursor/install.sh",
   "terminals": [
     {
       "name": "web-app",
-      "command": "cd app && ASPNETCORE_ENVIRONMENT=Development dotnet run --project FortniteReplayAnalyzer.csproj"
+      "command": "cd app && ASPNETCORE_ENVIRONMENT=Development dotnet run --project FortniteReplayAnalyzer.csproj",
+      "description": "ASP.NET Core dev server (Kestrel on http://localhost:5000 and https://localhost:5001). In Development it also launches the React (react-scripts) dev server and proxies it."
     }
   ],
   "ports": [
