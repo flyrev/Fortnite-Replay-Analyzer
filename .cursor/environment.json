@@ -1,0 +1,18 @@
+{
+  "name": "Fortnite Replay Analyzer",
+  "user": "ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "install": "cd app/ClientApp && npm ci && cd ../.. && dotnet restore app/FortniteReplayAnalyzer.csproj && dotnet restore cli/cli.csproj",
+  "terminals": [
+    {
+      "name": "web-app",
+      "command": "cd app && ASPNETCORE_ENVIRONMENT=Development dotnet run --project FortniteReplayAnalyzer.csproj"
+    }
+  ],
+  "ports": [
+    { "name": "http", "port": 5000 },
+    { "name": "https", "port": 5001 }
+  ]
+}
