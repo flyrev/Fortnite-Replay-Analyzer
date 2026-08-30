@@ -1,6 +1,7 @@
 ﻿using FortniteReplayAnalyzer.Controllers.ExternalApis;
 using FortniteReplayAnalyzer.Data;
 using FortniteReplayAnalyzer.ExternalApis;
+using FortniteReplayAnalyzer.ReplayProcessing;
 using FortniteReplayReader;
 using FortniteReplayReader.Models;
 using Microsoft.AspNetCore.Http;
@@ -41,7 +42,7 @@ namespace FortniteReplayAnalyzer.Controllers
             FortniteReplay parsedReplay;
             try
             {
-                var reader = new ReplayReader();
+                var reader = new OodleReplayReader(logger);
                 parsedReplay = reader.ReadReplay(replay.OpenReadStream());
             }
             catch (Exception ex)

@@ -8,11 +8,14 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules/**</DefaultItemExcludes>
     <AssemblyName>FortniteReplayAnalyzer</AssemblyName>
     <RootNamespace>FortniteReplayAnalyzer</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="4.0.101.6" />
     <PackageReference Include="FortniteReplayReader" Version="3.0.1" />
+    <PackageReference Include="Unreal.Core" Version="3.0.1" />
+    <PackageReference Include="Unreal.Encryption" Version="3.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.10" />
   </ItemGroup>
 
