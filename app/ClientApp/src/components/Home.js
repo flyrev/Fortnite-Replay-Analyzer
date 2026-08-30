@@ -28,7 +28,8 @@ export function Home() {
             setPending(false);
         }).catch(err => {
             console.error(err);
-            setError("There was an error uploading your replay: " + err);
+            const serverMessage = err.response && err.response.data && err.response.data.error;
+            setError(serverMessage || ("There was an error uploading your replay: " + err.message));
             setPending(false);
         });
     };
