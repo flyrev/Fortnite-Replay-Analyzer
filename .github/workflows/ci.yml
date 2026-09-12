@@ -32,6 +32,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Test Cloud Agent installer
+        run: bash .cursor/install.test.sh
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
