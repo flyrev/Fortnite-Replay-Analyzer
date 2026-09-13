@@ -22,9 +22,9 @@ namespace FortniteReplayAnalyzer.Controllers
     {
         private readonly ILogger<ReplayController> logger;
         private readonly FortniteIoApiClient apiClient;
-        private readonly ReplayAnalysisStorage replayStorage;
+        private readonly IReplayAnalysisStorage replayStorage;
 
-        public ReplayController(ILogger<ReplayController> logger, FortniteIoApiClient apiClient, ReplayAnalysisStorage replayStorage)
+        public ReplayController(ILogger<ReplayController> logger, FortniteIoApiClient apiClient, IReplayAnalysisStorage replayStorage)
         {
             this.logger = logger;
             this.apiClient = apiClient;

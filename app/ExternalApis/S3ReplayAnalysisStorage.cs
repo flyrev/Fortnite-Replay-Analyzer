@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace FortniteReplayAnalyzer.ExternalApis
 {
-    public class ReplayAnalysisStorage
+    public class S3ReplayAnalysisStorage : IReplayAnalysisStorage
     {
-        private readonly ILogger<ReplayAnalysisStorage> logger;
+        private readonly ILogger<S3ReplayAnalysisStorage> logger;
         private readonly string key;
         private readonly string secret;
         private readonly string bucket;
 
-        public ReplayAnalysisStorage(ILogger<ReplayAnalysisStorage> logger, string key, string secret, string bucket)
+        public S3ReplayAnalysisStorage(ILogger<S3ReplayAnalysisStorage> logger, string key, string secret, string bucket)
         {
             this.logger = logger;
             this.key = key;
@@ -52,7 +52,7 @@ namespace FortniteReplayAnalyzer.ExternalApis
                 logger.LogWarning("Json upload finished with status {StatusCode}. Key: {Guid}", response.HttpStatusCode, guid);
             }
         }
-        
+
         public async Task<string> ReadJsonDataAsync(string guid)
         {
             var client = new AmazonS3Client(key, secret, Amazon.RegionEndpoint.EUNorth1);
