@@ -9,4 +9,3 @@
     <ProjectReference Include="../../app/FortniteReplayAnalyzer.csproj" />
   </ItemGroup>
 </Project>
-

@@ -35,4 +35,3 @@ if ! grep -q 'apt-get install .*dotnet-sdk-10.0' "$install_log"; then
   echo "Expected the installer to install .NET 10 when only .NET 8 is available." >&2
   exit 1
 fi
-
