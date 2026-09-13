@@ -12,11 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="4.0.101.6" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.102.4" />
     <PackageReference Include="FortniteReplayReader" Version="3.0.1" />
     <PackageReference Include="Unreal.Core" Version="3.0.1" />
     <PackageReference Include="Unreal.Encryption" Version="3.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="10.0.11" />
   </ItemGroup>
 
   <ItemGroup>

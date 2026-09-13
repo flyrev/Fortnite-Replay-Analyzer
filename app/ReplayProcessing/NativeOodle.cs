@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
@@ -27,10 +25,6 @@ namespace FortniteReplayAnalyzer.ReplayProcessing
             void* fpCallback, void* callbackUserData,
             byte* decoderMemory, long decoderMemorySize, int threadPhase);
 
-        // Epic's redistributable Oodle build (same source CUE4Parse uses). Oodle 2.9.16.
-        private const string ReleaseUrl = "https://github.com/WorkingRobot/OodleUE/releases/download/2026-06-04-1357";
-        private const string LinuxZip = "gcc-x64-release.zip";
-        private const string WindowsZip = "clang-cl-x64-release.zip";
         private const string LinuxLib = "liboodle-data-shared.so";
         private const string WindowsLib = "oodle-data-shared.dll";
 
@@ -135,74 +129,20 @@ namespace FortniteReplayAnalyzer.ReplayProcessing
             var overridePath = Environment.GetEnvironmentVariable("OODLE_LIBRARY_PATH");
             if (!string.IsNullOrWhiteSpace(overridePath) && File.Exists(overridePath))
             {
-                return overridePath;
+                return Path.GetFullPath(overridePath);
             }
 
-            // 2. Alongside the application / working directory.
-            foreach (var dir in new[] { AppContext.BaseDirectory, Directory.GetCurrentDirectory() })
+            // 2. Alongside the application. Do not search the working directory: it may be
+            // writable by a less-trusted process in some hosting environments.
+            var candidate = Path.Combine(AppContext.BaseDirectory, libName);
+            if (File.Exists(candidate))
             {
-                var candidate = Path.Combine(dir, libName);
-                if (File.Exists(candidate))
-                {
-                    return candidate;
-                }
+                return candidate;
             }
 
-            // 3. Cached download.
-            var cacheDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "FortniteReplayAnalyzer", "oodle");
-            var cachedLib = Path.Combine(cacheDir, libName);
-            if (File.Exists(cachedLib))
-            {
-                return cachedLib;
-            }
-
-            if (string.Equals(Environment.GetEnvironmentVariable("OODLE_DISABLE_DOWNLOAD"), "1", StringComparison.Ordinal))
-            {
-                return null;
-            }
-
-            return DownloadLibrary(cacheDir, libName, logger);
-        }
-
-        private static string DownloadLibrary(string cacheDir, string libName, ILogger logger)
-        {
-            try
-            {
-                Directory.CreateDirectory(cacheDir);
-                var zipName = OperatingSystem.IsWindows() ? WindowsZip : LinuxZip;
-                var url = $"{ReleaseUrl}/{zipName}";
-                var entryName = OperatingSystem.IsWindows() ? $"bin/{libName}" : $"lib/{libName}";
-
-                logger?.LogInformation("Downloading native Oodle library from {Url}.", url);
-
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(60) };
-                using var response = client.GetAsync(url).GetAwaiter().GetResult();
-                response.EnsureSuccessStatusCode();
-
-                var zipBytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-                using var zipStream = new MemoryStream(zipBytes);
-                using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-
-                var entry = archive.GetEntry(entryName)
-                    ?? throw new FileNotFoundException($"Entry '{entryName}' not found in Oodle release archive.");
-
-                var destination = Path.Combine(cacheDir, libName);
-                using (var entryStream = entry.Open())
-                using (var fileStream = File.Create(destination))
-                {
-                    entryStream.CopyTo(fileStream);
-                }
-
-                logger?.LogInformation("Cached native Oodle library at {Path}.", destination);
-                return destination;
-            }
-            catch (Exception ex)
-            {
-                logger?.LogWarning(ex, "Could not download the native Oodle library.");
-                return null;
-            }
+            // Native libraries are executable code. Require explicit provisioning instead of
+            // downloading and loading a third-party binary at runtime without integrity metadata.
+            return null;
         }
     }
 }

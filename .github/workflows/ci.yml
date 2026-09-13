@@ -30,7 +30,10 @@ jobs:
       NPM_CONFIG_FUND: "false"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      - name: Test Cloud Agent installer
+        run: bash .cursor/install.test.sh
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -55,6 +58,9 @@ jobs:
       - name: Restore web app
         run: dotnet restore app/FortniteReplayAnalyzer.csproj
 
+      - name: Run replay analysis regression tests
+        run: dotnet run --project tests/ReplayAnalysisRegressionTests/ReplayAnalysisRegressionTests.csproj --configuration Release
+
       - name: Publish web app
         run: dotnet publish app/FortniteReplayAnalyzer.csproj --configuration Release --no-restore
 
@@ -71,7 +77,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build Docker image
         run: docker build --file app/Dockerfile --tag fortnite-replay-analyzer-ci app
