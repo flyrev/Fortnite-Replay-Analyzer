@@ -58,6 +58,9 @@ jobs:
       - name: Restore web app
         run: dotnet restore app/FortniteReplayAnalyzer.csproj
 
+      - name: Run replay analysis regression tests
+        run: dotnet run --project tests/ReplayAnalysisRegressionTests/ReplayAnalysisRegressionTests.csproj --configuration Release
+
       - name: Publish web app
         run: dotnet publish app/FortniteReplayAnalyzer.csproj --configuration Release --no-restore
 
